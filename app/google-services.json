@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "816686929921",
+    "project_id": "uriscan",
+    "storage_bucket": "uriscan.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816686929921:android:c45c441c15fb4a402f0800",
+        "android_client_info": {
+          "package_name": "com.nimrichtr.uriscan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "816686929921-pf0pej6riu4ep3je8le2a5mbrhuguomb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nimrichtr.uriscan",
+            "certificate_hash": "694c4b28cf965ab6680ec3241c5fbab01b77eefb"
+          }
+        },
+        {
+          "client_id": "816686929921-pc1efempc77ujm3rm3fbul494taumt8r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFvf_JA2fS4CE4PwJtSlNcJPQdUXFIm-c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "816686929921-pc1efempc77ujm3rm3fbul494taumt8r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

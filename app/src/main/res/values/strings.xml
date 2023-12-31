@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">UriScan</string>
+    <string name="register">Registrovat</string>
+    <string name="register_page_name">Registrace Uživatele</string>
+    <string name="login_page_name">Přihlášení Uživatele</string>
+    <string name="scan_page_name">Naskenujte vzorek</string>
+    <string name="upload_page_name">Nahrát sken</string>
+    <string name="back_button">Zpět</string>
+    <string name="patient_name">Jméno Pacienta</string>
+    <string name="cancel">Zrušit</string>
+    <string name="loading">Registruji...</string>
+    <string name="Email">E-mail</string>
+    <string name="Password">Heslo</string>
+    <string name="Register">Registrovat</string>
+</resources>
