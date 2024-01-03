@@ -41,24 +41,27 @@ class UploadModel(
             // Image upload successful
             Toast.makeText(context, "Image uploaded successfully!", Toast.LENGTH_SHORT).show()
 
+            // Update metadata
+            val metadata = storageMetadata {
+                contentType = "image/jpg"
+                setCustomMetadata("patient", patient)
+                setCustomMetadata("description", sampleDescription)
+
+            }
+            imageRef.updateMetadata(metadata).addOnSuccessListener { updatedMetadata ->
+                // Updated metadata is in updatedMetadata
+            }.addOnFailureListener {
+                // Uh-oh, an error occurred!
+            }
+
         }.addOnFailureListener { e ->
             // Image upload failed
             Toast.makeText(context, "Image upload failed: $e", Toast.LENGTH_SHORT).show()
         }
 
-        // Update metadata
-        val metadata = storageMetadata {
-            contentType = "image/jpg"
-            setCustomMetadata("patient", patient)
-            setCustomMetadata("description", sampleDescription)
 
-        }
 
-        imageRef.updateMetadata(metadata).addOnSuccessListener { updatedMetadata ->
-            // Updated metadata is in updatedMetadata
-        }.addOnFailureListener {
-            // Uh-oh, an error occurred!
-        }
+
 
 
         // saving images on device

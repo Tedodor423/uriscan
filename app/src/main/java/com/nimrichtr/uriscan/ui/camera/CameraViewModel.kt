@@ -54,4 +54,6 @@ class CameraViewModel(
         _state.value.capturedImage?.recycle()
         super.onCleared()
     }
+
+
 }

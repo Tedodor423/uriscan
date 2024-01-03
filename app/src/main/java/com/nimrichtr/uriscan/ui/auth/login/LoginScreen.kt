@@ -57,7 +57,7 @@ fun LoginScreen(userLoginViewModel: LoginViewModel, onNextNavigate: () -> Unit) 
             }, applyVisualTransformation = true)
             Spacer(modifier = Modifier.height(height = 21.dp))
             Button(onClick = {
-                userLoginViewModel.loginUser(email="vrtulnik1@gmail.com", password="a2+b2=c23")   //email = emailAddress, password = password)
+                userLoginViewModel.loginUser(email = emailAddress, password = password)
                 onNextNavigate()
             }) {
                 Text(

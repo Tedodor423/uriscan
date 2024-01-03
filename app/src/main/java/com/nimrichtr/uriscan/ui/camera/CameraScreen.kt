@@ -142,14 +142,12 @@ private fun CameraContent(
                         height = 200.dp,
                         offsetY = 150.dp,
                         modifier = Modifier.fillMaxSize(),
-                        onCropSuccess = {
-                            cameraViewModel.saveImage(it.asAndroidBitmap())
-                            onNextNavigation()
-                        },
-                    ) {
-                        showDialog.value = false
-                        cameraViewModel.clearImage()
-                    }
+                        onCropSuccess = {cameraViewModel.saveImage(it.asAndroidBitmap()) },
+                        onConfirm = {onNextNavigation()},
+                        onDismissRequest = {
+                            showDialog.value = false
+                            cameraViewModel.clearImage()
+                        } )
                 } else {
                     showDialog.value=false
                 }
@@ -201,12 +199,14 @@ fun ShowCroppedImageDialog(imageBitmap: ImageBitmap,
                            offsetY: Dp,
                            modifier: Modifier,
                            onCropSuccess: (ImageBitmap) -> Unit,
+                           onConfirm: () -> Unit,
                            onDismissRequest: () -> Unit
 ) {
     Log.d("UPLOAD", "showing crop dialog")
     val offsetInPx: Float
     val widthInPx: Float
     val heightInPx: Float
+    var croppedBitmap:ImageBitmap? = null
 
     with(LocalDensity.current) {
         offsetInPx = offsetY.toPx()
@@ -248,19 +248,20 @@ fun ShowCroppedImageDialog(imageBitmap: ImageBitmap,
             )
         }
         val crop = true
+
         LaunchedEffect(crop) {
             if (crop) {
                 Log.d("UPLOAD", "cropping")
                 delay(500)
-                val croppedBitmap = Bitmap.createBitmap(
+                croppedBitmap = Bitmap.createBitmap(
                     imageBitmap.asAndroidBitmap(),
                     rectCrop.left,
                     rectCrop.top,
                     rectCrop.width,
                     rectCrop.height
                 ).asImageBitmap()
-
-                onCropSuccess(croppedBitmap)
+                val croppedBitmapTemp = croppedBitmap
+                onCropSuccess(croppedBitmapTemp!!)
             }
         }
     }
@@ -269,8 +270,9 @@ fun ShowCroppedImageDialog(imageBitmap: ImageBitmap,
     AlertDialog(
         onDismissRequest = onDismissRequest,
         text = {
+            if (croppedBitmap != null)
             Image(
-                modifier = Modifier.fillMaxWidth().aspectRatio(ratio = 3.toFloat()),
+                modifier = Modifier.fillMaxWidth(),  //.aspectRatio(ratio = 3.toFloat()),
                 contentScale = ContentScale.Fit,
                 bitmap = imageBitmap,
                 contentDescription = "result"
@@ -279,7 +281,7 @@ fun ShowCroppedImageDialog(imageBitmap: ImageBitmap,
         confirmButton = {
             TextButton(
                 onClick = {
-                    onDismissRequest()
+                    onConfirm()
                 }
             ) {
                 Text("Confirm")
