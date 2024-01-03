@@ -31,9 +31,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.nimrichtr.uriscan.R
 import com.nimrichtr.uriscan.Routes
+import com.nimrichtr.uriscan.ui.auth.login.LoginViewModel
 
 @Composable
-fun RegisterScreen(userSignupViewModel: RegisterViewModel, navController: NavHostController) {
+fun RegisterScreen(userRegisterViewModel: RegisterViewModel, onNextNavigate: () -> Unit) {
 
 
     var emailAddress by rememberSaveable { mutableStateOf("") }
@@ -51,22 +52,23 @@ fun RegisterScreen(userSignupViewModel: RegisterViewModel, navController: NavHos
         ) {
             RegisterOutlinedText(value = emailAddress, onValueChanged = { emailAddress = it }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next), label = {
                 Text(
-                    text = "Email Address"
+                    text = stringResource(id = R.string.Email)
                 )
             })
             Spacer(modifier = Modifier.height(height = 7.dp))
             RegisterOutlinedText(value = password, onValueChanged = { password = it }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next), label = {
                 Text(
-                    text = "Password"
+                    text = stringResource(id = R.string.Password)
                 )
             }, applyVisualTransformation = true)
             Spacer(modifier = Modifier.height(height = 21.dp))
             Button(onClick = {
-                userSignupViewModel.registerUser(email = emailAddress, password = password)
-                homeViewModel.getUserDetails()
-                navController.navigate(Routes.Home.name)
+                userRegisterViewModel.registerUser(email = emailAddress, password = password)
+                onNextNavigate()
             }) {
-                Text(text = "Register")
+                Text(
+                    stringResource(id = R.string.Register)
+                )
             }
         }
     }

@@ -6,12 +6,12 @@ import android.Manifest
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModel
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.nimrichtr.uriscan.ui.home.HomeViewModel
-import org.koin.androidx.compose.koinViewModel
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -49,13 +49,14 @@ private fun MainContent(
     }
 }
 
+/*
 @Preview
 @Composable
 private fun Preview_MainContent() {
     MainContent(
         hasPermission = true,
         onRequestPermission = {},
-        cameraViewModel = koinViewModel(),
+        cameraViewModel = ViewModel(),
         onNextNavigation = {}
     )
-}
+}*/

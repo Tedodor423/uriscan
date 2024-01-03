@@ -12,4 +12,9 @@
     <string name="Email">E-mail</string>
     <string name="Password">Heslo</string>
     <string name="Register">Registrovat</string>
+    <string name="upload_button">Nahrát</string>
+    <string name="sample_description">Popis Vzorku</string>
+    <string name="current_user">"Přihlášený uživatel: "</string>
+    <string name="Login">Přihlásit</string>
+    <string name="upload_scan_button">Nahrát sken</string>
 </resources>

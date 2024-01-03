@@ -1,6 +1,5 @@
 package com.nimrichtr.uriscan.ui.camera
 
-import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
 
@@ -29,6 +28,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -51,7 +51,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
@@ -62,10 +61,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
-import org.koin.androidx.compose.koinViewModel
 import java.util.concurrent.Executor
-import androidx.compose.runtime.*
-import com.nimrichtr.uriscan.ui.home.HomeViewModel
+
 
 /*
 Code for camera overlay from https://stackoverflow.com/a/73545721
@@ -79,7 +76,7 @@ fun CameraScreen(
     val cameraState: CameraState by cameraViewModel.state.collectAsStateWithLifecycle()
 
     CameraContent(
-        onPhotoCaptured = cameraViewModel::capturePhoto,
+        cameraViewModel = cameraViewModel,
         onNextNavigation = onNextNavigation
 
     )
@@ -87,7 +84,7 @@ fun CameraScreen(
 
 @Composable
 private fun CameraContent(
-    onPhotoCaptured: (Bitmap) -> Unit,
+    cameraViewModel: CameraViewModel,
     onNextNavigation: () -> Unit
 ) {
 
@@ -95,10 +92,7 @@ private fun CameraContent(
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
     val cameraController: LifecycleCameraController = remember { LifecycleCameraController(context) }
 
-    var croppedImage by remember { mutableStateOf<ImageBitmap?>(null) }
-
-    var crop by remember { mutableStateOf(false) }
-    var showDialog by remember { mutableStateOf(false) }
+    val showDialog = remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -106,8 +100,9 @@ private fun CameraContent(
             ExtendedFloatingActionButton(
                 text = { Text(text = "Take photo") },
                 onClick = {
-                    capturePhoto(context, cameraController, onPhotoCaptured)
-                    onNextNavigation()
+                    capturePhoto(context, cameraController, cameraViewModel::saveImage, {showDialog.value = true})
+
+                    Log.d("UPLOAD", "clicked capture button")
                           },
                 icon = { Icon(imageVector = Icons.Default.Camera, contentDescription = "Camera capture icon") }
             )
@@ -138,24 +133,25 @@ private fun CameraContent(
                 offsetY = 150.dp
             )
 
-            if (showDialog) {
-                croppedImage?.let {
+            if (showDialog.value) {
+                Log.d("UPLOAD", "showing dialog ".plus(cameraViewModel.getImage().toString()))
+                if (cameraViewModel.getImage() != null) {
                     ShowCroppedImageDialog(
-                        imageBitmap = it,
+                        imageBitmap = cameraViewModel.getImage()!!.asImageBitmap(),
                         width = 300.dp,
                         height = 200.dp,
                         offsetY = 150.dp,
                         modifier = Modifier.fillMaxSize(),
                         onCropSuccess = {
-                            croppedImage = it
-                            crop = false
-                            showDialog = true
-                            onPhotoCaptured(it.asAndroidBitmap())
+                            cameraViewModel.saveImage(it.asAndroidBitmap())
+                            onNextNavigation()
                         },
                     ) {
-                        showDialog = !showDialog
-                        croppedImage = null
+                        showDialog.value = false
+                        cameraViewModel.clearImage()
                     }
+                } else {
+                    showDialog.value=false
                 }
             }
 
@@ -174,7 +170,8 @@ private fun CameraContent(
 private fun capturePhoto(
     context: Context,
     cameraController: LifecycleCameraController,
-    onPhotoCaptured: (Bitmap) -> Unit
+    saveImage: (Bitmap) -> Unit,
+    showDialog: () -> Unit
 ) {
     val mainExecutor: Executor = ContextCompat.getMainExecutor(context)
 
@@ -184,9 +181,10 @@ private fun capturePhoto(
             val imageBitmap: Bitmap = image
                 .toBitmap()
 
-            onPhotoCaptured(imageBitmap)
-
+            Log.d("UPLOAD", "calling onPhotoCapture")
+            saveImage(imageBitmap)
             image.close()
+            showDialog()
         }
 
         override fun onError(exception: ImageCaptureException) {
@@ -201,12 +199,11 @@ fun ShowCroppedImageDialog(imageBitmap: ImageBitmap,
                            width: Dp,
                            height: Dp,
                            offsetY: Dp,
-                           crop: Boolean = false,
                            modifier: Modifier,
                            onCropSuccess: (ImageBitmap) -> Unit,
                            onDismissRequest: () -> Unit
 ) {
-
+    Log.d("UPLOAD", "showing crop dialog")
     val offsetInPx: Float
     val widthInPx: Float
     val heightInPx: Float
@@ -250,9 +247,10 @@ fun ShowCroppedImageDialog(imageBitmap: ImageBitmap,
                 )
             )
         }
-
+        val crop = true
         LaunchedEffect(crop) {
             if (crop) {
+                Log.d("UPLOAD", "cropping")
                 delay(500)
                 val croppedBitmap = Bitmap.createBitmap(
                     imageBitmap.asAndroidBitmap(),
@@ -268,7 +266,7 @@ fun ShowCroppedImageDialog(imageBitmap: ImageBitmap,
     }
 
 
-    androidx.compose.material3.AlertDialog(
+    AlertDialog(
         onDismissRequest = onDismissRequest,
         text = {
             Image(
@@ -371,13 +369,4 @@ private fun LastPhotoPreview(
             contentScale = ContentScale.Crop
         )
     }
-}
-
-@Preview
-@Composable
-private fun Preview_CameraContent() {
-    CameraContent(
-        onPhotoCaptured = {},
-        onNextNavigation = {}
-    )
 }

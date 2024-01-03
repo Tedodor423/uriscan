@@ -2,7 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
-    id("com.google.devtools.ksp") version "1.9.10-1.0.13"
+    //id("com.google.devtools.ksp") version "1.9.10-1.0.13"
 }
 
 android {
@@ -95,13 +95,13 @@ dependencies {
     // Accompanist
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
 
-    // DEPENDENCY INJECTION
+    /*// DEPENDENCY INJECTION
     implementation("io.insert-koin:koin-core:3.4.2")
     implementation("io.insert-koin:koin-android:3.4.2")
     implementation("io.insert-koin:koin-androidx-compose:3.4.6")
     // KSP
     implementation("io.insert-koin:koin-annotations:1.2.2")
-    ksp("io.insert-koin:koin-ksp-compiler:1.2.2")
+    ksp("io.insert-koin:koin-ksp-compiler:1.2.2")*/
 
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))

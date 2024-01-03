@@ -16,7 +16,6 @@
 package com.nimrichtr.uriscan
 
 import android.content.Context
-import android.content.Intent
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -41,10 +40,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.Firebase
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
-import com.nimrichtr.uriscan.data.auth.AuthRepository
 import com.nimrichtr.uriscan.data.auth.AuthRepositoryImpl
 import com.nimrichtr.uriscan.ui.auth.login.LoginScreen
 import com.nimrichtr.uriscan.ui.auth.login.LoginViewModel
@@ -55,7 +52,6 @@ import com.nimrichtr.uriscan.ui.camera.CaptureScreen
 import com.nimrichtr.uriscan.ui.home.HomeScreen
 import com.nimrichtr.uriscan.ui.upload.UploadScreen
 import com.nimrichtr.uriscan.ui.home.HomeViewModel
-import org.koin.androidx.compose.koinViewModel
 
 enum class Routes(@StringRes val title: Int) {
     Register(title = R.string.register_page_name),
@@ -70,7 +66,7 @@ enum class Routes(@StringRes val title: Int) {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CupcakeAppBar(
+fun UriScanAppBar(
     currentScreen: Routes,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
@@ -97,14 +93,14 @@ fun CupcakeAppBar(
 
 @Composable
 fun UriScanApp(
-    homeViewModel: HomeViewModel = viewModel(),
     navController: NavHostController = rememberNavController(),
-    cameraViewModel: CameraViewModel = koinViewModel(),
+    cameraViewModel: CameraViewModel = viewModel(),
     context: Context = LocalContext.current,
-    firebaseAuth: FirebaseAuth = Firebase.auth
+    firebaseAuth: FirebaseAuth = Firebase.auth,
+    homeViewModel: HomeViewModel = viewModel(),
 
 
-) {
+    ) {
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Get the name of the current screen
@@ -114,7 +110,7 @@ fun UriScanApp(
 
     Scaffold(
         topBar = {
-            CupcakeAppBar(
+            UriScanAppBar(
                 currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() }
@@ -129,20 +125,31 @@ fun UriScanApp(
         ) {
             composable(route = Routes.Register.name) {
                 RegisterScreen(
-                    userRegisterViewModel = RegisterViewModel(context, AuthRepositoryImpl(firebaseAuth)),
+                    userRegisterViewModel = RegisterViewModel(context, AuthRepositoryImpl(firebaseAuth) {
+                        homeViewModel.currentUser = it.currentUser
+                        homeViewModel.updateUser()
+                    }),
                     onNextNavigate = {navController.navigate(Routes.Home.name)}
                 )
             }
 
             composable(route = Routes.Login.name) {
                 LoginScreen(
-                    userLoginViewModel = LoginViewModel(context, AuthRepositoryImpl(firebaseAuth)),
+                    userLoginViewModel = LoginViewModel(context, AuthRepositoryImpl(firebaseAuth) {
+                        homeViewModel.currentUser = it.currentUser
+                        homeViewModel.updateUser()
+                    }),
                     onNextNavigate = {navController.navigate(Routes.Home.name)}
                 )
             }
 
             composable(route = Routes.Home.name) {
-                HomeScreen()
+                HomeScreen(
+                    homeViewModel = homeViewModel,
+                    onLoginNavigate = {navController.navigate(Routes.Login.name)},
+                    onRegisterNavigate = {navController.navigate(Routes.Register.name)},
+                    onScanNavigate = {navController.navigate(Routes.Scan.name)},
+                )
             }
 
             composable(route = Routes.Scan.name) {
@@ -169,7 +176,7 @@ fun UriScanApp(
 /**
  * Creates an intent to share order details
  */
-private fun shareOrder(context: Context, subject: String, summary: String) {
+/*private fun shareOrder(context: Context, subject: String, summary: String) {
     // Create an ACTION_SEND implicit intent with order details in the intent extras
     val intent = Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
@@ -182,4 +189,4 @@ private fun shareOrder(context: Context, subject: String, summary: String) {
             context.getString(R.string.new_cupcake_order)
         )
     )
-}
+}*/

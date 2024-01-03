@@ -1,28 +1,38 @@
 package com.nimrichtr.uriscan.ui.camera
 
-import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nimrichtr.uriscan.data.images.SaveMediaModel
+import com.nimrichtr.uriscan.data.images.UploadModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.koin.android.annotation.KoinViewModel
 
-@KoinViewModel
+
 class CameraViewModel(
-    private val uploadModel: SaveMediaModel
+    private val uploadModel: UploadModel = UploadModel()
 ) : ViewModel() {
+
+
 
     private val _state = MutableStateFlow(CameraState())
     val state = _state.asStateFlow()
 
-    fun capturePhoto(bitmap: Bitmap) {
+    fun saveImage(bitmap: Bitmap) {
         viewModelScope.launch {
+            Log.d("UPLOAD", "calling updateCaptured Photo")
             updateCapturedPhotoState(bitmap)
         }
+    }
+
+    fun clearImage() {
+        updateCapturedPhotoState(null)
+    }
+
+    fun getImage(): Bitmap? {
+        return _state.value.capturedImage
     }
 
     fun uploadPhoto(folder: String, context: Context, patient: String, sampleDescription: String) {

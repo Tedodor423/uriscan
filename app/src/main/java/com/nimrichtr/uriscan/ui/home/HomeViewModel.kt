@@ -1,29 +1,24 @@
 package com.nimrichtr.uriscan.ui.home
 
 import android.app.Application
-import android.net.Uri
-import android.widget.Toast
-import androidx.compose.runtime.*
+
 import androidx.lifecycle.AndroidViewModel
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
-import com.nimrichtr.uriscan.data.db.User
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+
 
 class HomeViewModel (private val application: Application) : AndroidViewModel(application = application) {
 
-    var userList = mutableStateListOf<User?>()
-    var myDatabase: FirebaseFirestore = FirebaseFirestore.getInstance()
+    var currentUser: FirebaseUser? = null
+    var loggedIn = false
+    var userName: String? = ""
 
-
-    init {
-        getUserDetails()
+    fun updateUser(){
+        loggedIn = currentUser != null
+        if (loggedIn) {
+            userName = currentUser!!.email
+        } else {
+            userName = "žádný"
+        }
     }
-
-    fun getUserDetails() {
-
-
-
-
-    }
-
 }

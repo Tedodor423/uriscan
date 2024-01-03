@@ -8,25 +8,23 @@ import androidx.lifecycle.viewModelScope
 
 import com.nimrichtr.uriscan.data.auth.AuthRepository
 import com.nimrichtr.uriscan.shared.Resource
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @ViewModelFactoryDsl
-class LoginViewModel (private val context: Context, private val repository: AuthRepository) : ViewModel() {
+class LoginViewModel(private val context: Context, private val repository: AuthRepository) : ViewModel() {
 
 
     fun loginUser(email: String, password: String) = viewModelScope.launch {
         repository.loginUser(email = email, password = password).collectLatest { result ->
             when(result) {
                 is Resource.Loading -> {
-                    Toast.makeText(context, "Přhlašuji...", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Přihlašuji...", Toast.LENGTH_SHORT).show()
                 }
 
                 is Resource.Success -> {
                     Toast.makeText(context, "Uživatel přihlášen", Toast.LENGTH_SHORT).show()
+
                 }
 
                 is Resource.Error -> {

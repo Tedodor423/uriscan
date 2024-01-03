@@ -1,6 +1,5 @@
 package com.nimrichtr.uriscan.ui.upload
 
-import android.app.Application
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +14,10 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -35,34 +38,38 @@ fun UploadScreen(context: Context,
                  onCancelButtonClicked: () -> Unit
 ) {
 
+    var patient by rememberSaveable { mutableStateOf("") }
+
+    var sampleDescription by rememberSaveable { mutableStateOf("") }
+
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         //Image(modifier = Modifier.fillMaxSize(), painter = painterResource(id = R.drawable.register), contentDescription = "Register")
         Column(
-            modifier = Modifier.fillMaxSize(),
+            //modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            AddNewUserOutlinedText(value = uploadViewModel.patient, onValueChanged = { uploadViewModel.patient = it }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next), label = {
+            AddNewUserOutlinedText(value = patient, onValueChanged = { patient = it }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next), label = {
                 Text(
                     text = stringResource(id = R.string.patient_name)
                 )
             })
             Spacer(modifier = Modifier.height(height = 7.dp))
-            AddNewUserOutlinedText(value = uploadViewModel.sampleDescription, onValueChanged = { uploadViewModel.sampleDescription = it }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next), label = {
+            AddNewUserOutlinedText(value = sampleDescription, onValueChanged = { sampleDescription = it }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next), label = {
                 Text(
-                    text = "Age"
+                    text = stringResource(id = R.string.sample_description)
                 )
             })
 
             Spacer(modifier = Modifier.height(height = 21.dp))
             Button(onClick = {
-                cameraViewModel.uploadPhoto("samples", context, uploadViewModel.patient, uploadViewModel.sampleDescription)
+                cameraViewModel.uploadPhoto("samples", context, patient, sampleDescription)
                 onNavigateNext()
             }) {
-                Text(text = "Add")
+                Text(stringResource(id = R.string.upload_button))
             }
             OutlinedButton(modifier = Modifier.weight(1f), onClick = onCancelButtonClicked) {
                 Text(stringResource(R.string.cancel))

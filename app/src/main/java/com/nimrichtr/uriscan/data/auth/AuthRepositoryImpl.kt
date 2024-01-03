@@ -14,12 +14,14 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
-class AuthRepositoryImpl (private val firebaseAuth: FirebaseAuth) : AuthRepository
+class AuthRepositoryImpl (private val firebaseAuth: FirebaseAuth, updateViewModel: (FirebaseAuth) -> Unit) : AuthRepository
 {
+    var updateViewModel = updateViewModel
     override fun loginUser(email: String, password: String): Flow<Resource<AuthResult>> {
         return flow {
             emit(value = Resource.Loading())
             val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
+            updateViewModel(firebaseAuth)
             emit(value = Resource.Success(data = result))
         }.catch {
             emit(value = Resource.Error(it.message.toString()))
@@ -30,6 +32,7 @@ class AuthRepositoryImpl (private val firebaseAuth: FirebaseAuth) : AuthReposito
         return flow {
             emit(value = Resource.Loading())
             val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+            updateViewModel(firebaseAuth)
             emit(value = Resource.Success(data = result))
         }.catch {
             emit(value = Resource.Error(it.message.toString()))
